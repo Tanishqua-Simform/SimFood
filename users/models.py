@@ -21,7 +21,8 @@ class SimfoodUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = {
         ("Consumer","consumer"),
         ("Cook","cook"),
-        ("Headchef","headchef")
+        ("Headchef","headchef"),
+        ("Monitor","monitor")
     }
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)
@@ -30,6 +31,7 @@ class SimfoodUser(AbstractBaseUser, PermissionsMixin):
     subscription_active = models.BooleanField(default=False)
     prefer_jain_food = models.BooleanField(default=False)
     will_eat = models.BooleanField(default=False)
+    came_to_eat = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
