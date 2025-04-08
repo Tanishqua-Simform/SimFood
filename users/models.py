@@ -19,10 +19,10 @@ class CustomUserManager(BaseUserManager):
 
 class SimfoodUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = {
-        ("Consumer","consumer"),
-        ("Cook","cook"),
-        ("Headchef","headchef"),
-        ("Monitor","monitor")
+        ('consumer', 'Consumer'), 
+        ('cook', 'Cook'), 
+        ('headchef', 'Headchef'), 
+        ('monitor', 'Monitor')
     }
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=50)

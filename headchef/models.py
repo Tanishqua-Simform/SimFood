@@ -4,8 +4,8 @@ from multiselectfield import MultiSelectField
 
 class TaskModel(models.Model):
     status_choice = (
-        ("Pending", "pending"),
-        ("Completed", "completed")
+        ('pending', 'Pending'), 
+        ('completed', 'Completed')
     )
     title=models.CharField(max_length=100)
     description=models.TextField()
@@ -20,65 +20,66 @@ class TaskModel(models.Model):
 
 class MenuModel(models.Model):
     DAL_CHOICES = (
-        ('Dal Fry', 'dal_fry'),
-        ('Gujarati Dal', 'gujarati_dal'),
-        ('Mix Dal', 'mix_dal'),
-        ('Punjabi Dal', 'punjabi_dal'),
-        ('Khatti Meethi Dal', 'khatti_meethi_dal'),
-        ('Dal Tadka', 'dal_tadka'),
-        ('Kadhi', 'kadhi')
+        ('dal_fry', 'Dal Fry'), 
+        ('gujarati_dal', 'Gujarati Dal'), 
+        ('mix_dal', 'Mix Dal'), 
+        ('punjabi_dal', 'Punjabi Dal'), 
+        ('khatti_meethi_dal', 'Khatti Meethi Dal'), 
+        ('dal_tadka', 'Dal Tadka'), 
+        ('kadhi', 'Kadhi')
     )
     RICE_CHOICES = (
-        ('Plain Rice', 'plain_rice'),
-        ('Jeera Rice', 'jeera_rice'),
-        ('Pulao', 'pulao'),
-        ('Veg Biryani', 'veg_biryani')
+        ('plain_rice', 'Plain Rice'), 
+        ('jeera_rice', 'Jeera Rice'), 
+        ('pulao', 'Pulao'), 
+        ('veg_biryani', 'Veg Biryani')
     )
     SABZI_CHOICES = (
-        ('Aloo Bhindi','aloo_bhindi'),
-        ('Butter Paneer','butter_paneer'),
-        ('Gobi Aloo','gobi_aloo'),
-        ('Tinda','tinda'),
-        ('Lasaniya Aloo','lasaniya_aloo'),
-        ('Mix Veg','mix_veg'),
-        ('Dahi Aloo','dahi_aloo'),
-        ('Rajma','rajma'),
-        ('Chole','chole'),
-        ('Tuver','tuver'),
+        ('aloo_bhindi', 'Aloo Bhindi'), 
+        ('butter_paneer', 'Butter Paneer'), 
+        ('gobi_aloo', 'Gobi Aloo'), 
+        ('tinda', 'Tinda'), 
+        ('lasaniya_aloo', 'Lasaniya Aloo'), 
+        ('mix_veg', 'Mix Veg'), 
+        ('dahi_aloo', 'Dahi Aloo'), 
+        ('rajma', 'Rajma'), 
+        ('chole', 'Chole'), 
+        ('tuver', 'Tuver')
     )
     ROTI_CHOICES = (
-        ('Plain Roti','plain_roti'),
-        ('Bajra Roti','bajra_roti'),
-        ('Puri','puri'),
-        ('Baati','baati'),
-        ('Parantha','parantha')
+        ('plain_roti', 'Plain Roti'), 
+        ('bajra_roti', 'Bajra Roti'), 
+        ('puri', 'Puri'), 
+        ('baati', 'Baati'), 
+        ('parantha', 'Parantha')
     )
     EXTRA_CHOICES = (
-        ('Salad','salad'),
-        ('Pickle','pickle'),
-        ('Jaggery','jaggery'),
-        ('Pappad','Pappad'),
-        ('Sandwich Dhokla','sandwich_dhokla'),
-        ('Bakharwadi','bakharwadi'),
-        ('Fulwadi','fulwadi'),
-        ('Patra','patra'),
-        ('Bhajiya','bhajiya'),
-        ('Khandvi','khandvi'),
-        ('Khaman','khaman')
+        ('salad', 'Salad'), 
+        ('pickle', 'Pickle'), 
+        ('jaggery', 'Jaggery'), 
+        ('pappad', 'Pappad'), 
+        ('sandwich_dhokla', 'Sandwich Dhokla'), 
+        ('bakharwadi', 'Bakharwadi'), 
+        ('fulwadi', 'Fulwadi'), 
+        ('patra', 'Patra'), 
+        ('bhajiya', 'Bhajiya'), 
+        ('khandvi', 'Khandvi'), 
+        ('khaman', 'Khaman'), 
+        ('dhokla', 'Dhokla')
     )
     JAIN_DAL_CHOICES = (
-        ('Gujarati Dal', 'gujarati_dal'),
-        ('Mix Dal', 'mix_dal'),
-        ('Khatti Meethi dal', 'khatti_meethi_dal'),
-        ('Kadhi', 'kadhi')
+        ('gujarati_dal', 'Gujarati Dal'), 
+        ('mix_dal', 'Mix Dal'), 
+        ('khatti_meethi_dal', 'Khatti Meethi Dal'), 
+        ('kadhi', 'Kadhi')
     )
     JAIN_SABZI_CHOICES = (
-        ('Pappad nu shak', 'pappad_nu_shak'),
-        ('Kela nu shak', 'kela_nu_shak'),
-        ('Kobij', 'kobij'),
-        ('Rajma', 'rajma'),
-        ('Chole', 'chole'),
-        ('Tuver', 'tuver')
+        ('pappad_nu_shak', 'Pappad nu shak'), 
+        ('kela_nu_shak', 'Kela nu shak'), 
+        ('kobij', 'Kobij'), 
+        ('rajma', 'Rajma'), 
+        ('chole', 'Chole'), 
+        ('tuver', 'Tuver')
     )
     date=models.DateField(unique=True)
     dal=models.CharField(max_length=20, choices=DAL_CHOICES)
@@ -93,4 +94,4 @@ class MenuModel(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.date
+        return str(self.date)

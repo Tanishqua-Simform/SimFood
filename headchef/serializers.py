@@ -44,4 +44,14 @@ class MenuSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('You can only add menu for future dates!')
         return date
     
-    
+    def update(self, instance, validated_data):
+        ''' So that menu date is modifiable only during creation but not at updation'''
+        instance.dal = validated_data.get('dal', instance.dal)
+        instance.rice = validated_data.get('rice', instance.rice)
+        instance.sabzi = validated_data.get('sabzi', instance.sabzi)
+        instance.roti = validated_data.get('roti', instance.roti)
+        instance.extras = validated_data.get('extras', instance.extras)
+        instance.jain_dal = validated_data.get('jain_dal', instance.jain_dal)
+        instance.jain_sabzi = validated_data.get('jain_sabzi', instance.jain_sabzi)
+        instance.save()
+        return instance
