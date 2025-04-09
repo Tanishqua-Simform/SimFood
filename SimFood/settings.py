@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_celery_results',
+    'django_celery_beat',
     'headchef',
     'users',
 ]
@@ -149,6 +151,7 @@ REST_FRAMEWORK = {
     ],
 }
 
+# JWT Authentication Configuration
 SIMPLE_JWT = {
     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
@@ -157,3 +160,24 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
 }
+
+# Celery Configuration
+### DEPRECATED VARIABLES
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
+# # CELERY_RESULT_BACKEND = f'db+postgresql://{os.getenv("DATABASE_POSTGRES_USER")}:{os.getenv("DATABASE_POSTGRES_PASSWORD")}@localhost/simfood'
+# CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+# CELERY_TIMEZONE = 'Asia/Kolkata'
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+accept_content = ['application/json']
+result_serializer = 'json'
+task_serializer = 'json'
+# result_backend = f'db+postgresql://{os.getenv("DATABASE_POSTGRES_USER")}:{os.getenv("DATABASE_POSTGRES_PASSWORD")}@localhost/simfood'
+result_backend = 'redis://127.0.0.1:6379'
+timezone = 'Asia/Kolkata'
+
+# Celery Beat 
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
