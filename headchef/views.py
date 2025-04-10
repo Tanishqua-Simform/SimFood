@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db import connection
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -42,4 +43,10 @@ def get_will_eat_count(request):
         'going_to_eat_normal': total_yes - eat_jain,
         'going_to_eat_jain': eat_jain
     }
+
+    ## NOT WORKING PROPERLY FIND ALTERNATIVE.
+    # with connection.cursor() as cursor:
+    #     cursor.execute('CALL public.will_eat_count_daily()')
+    #     result = cursor.fetchall()
+    #     print(result)
     return Response(content) 

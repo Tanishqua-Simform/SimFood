@@ -16,6 +16,8 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
+from celery.schedules import crontab
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,8 +49,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_celery_results',
     'django_celery_beat',
-    'headchef',
     'users',
+    'headchef',
+    'cook',
+    'consumer',
+    'monitor',
 ]
 
 MIDDLEWARE = [
@@ -181,3 +186,22 @@ timezone = 'Asia/Kolkata'
 
 # Celery Beat 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULE = {
+    'daily_fill_stats_table': {
+        'task': 'monitor.tasks.fill_stats_table',
+        # 'schedule': crontab(minute=0, hour=11) # Fill the Stats table everyday @ 4:30 pm IST.
+        'schedule': crontab(minute=38, hour=12)  # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+    },
+
+    'daily_set_will_eat_to_false': {
+        'task': 'users.tasks.set_will_eat_false',
+        # 'schedule': crontab(minute=30, hour=11) # Makes the will_eat attribute of all users to False @ 5 pm IST.
+        'schedule': crontab(minute=20, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+    },
+
+    'monthly_set_subscription_active_to_false': {
+        'task': 'users.tasks.set_subscription_active_false',
+        # 'schedule': crontab(minute=0, hour=0, day_of_month=1) # Makes the subscription_active attribute of all users to False at 12 am IST on 1st of every month.
+        'schedule': crontab(minute=21, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+    }
+}
