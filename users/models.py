@@ -29,6 +29,7 @@ class SimfoodUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50)
     role = models.CharField(max_length=8, choices=ROLE_CHOICES, default='Consumer')
     subscription_active = models.BooleanField(default=False)
+    paid_next_month = models.BooleanField(default=False)
     prefer_jain_food = models.BooleanField(default=False)
     will_eat = models.BooleanField(default=False)
     came_to_eat = models.BooleanField(default=False)

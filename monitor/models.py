@@ -6,6 +6,7 @@ class StatsModel(models.Model):
     chose_yes_came=models.IntegerField()
     chose_yes_not_came=models.IntegerField()
     chose_no=models.IntegerField()
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.menu_id

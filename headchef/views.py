@@ -36,17 +36,10 @@ class MenuRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated & IsHeadChef])
 def get_will_eat_count(request):
-    will_eat = SimfoodUser.objects.filter(will_eat=True)
-    total_yes = len(will_eat)
-    eat_jain = len(will_eat.filter(prefer_jain_food=True))
+    eat_jain = SimfoodUser.objects.filter(will_eat=True, prefer_jain_food=True).count()
+    eat_regular = SimfoodUser.objects.filter(will_eat=True, prefer_jain_food=False).count()
     content = {
-        'going_to_eat_normal': total_yes - eat_jain,
+        'going_to_eat_regular': eat_regular,
         'going_to_eat_jain': eat_jain
     }
-
-    ## NOT WORKING PROPERLY FIND ALTERNATIVE.
-    # with connection.cursor() as cursor:
-    #     cursor.execute('CALL public.will_eat_count_daily()')
-    #     result = cursor.fetchall()
-    #     print(result)
     return Response(content) 

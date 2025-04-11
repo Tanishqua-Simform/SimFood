@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.request_log.RequestLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'SimFood.urls'
@@ -126,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -189,13 +190,13 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {
     'daily_fill_stats_table': {
         'task': 'monitor.tasks.fill_stats_table',
-        # 'schedule': crontab(minute=0, hour=11) # Fill the Stats table everyday @ 4:30 pm IST.
+        # 'schedule': crontab(minute=30, hour=16) # Fill the Stats table everyday @ 4:30 pm IST.
         'schedule': crontab(minute=38, hour=12)  # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
     },
 
     'daily_set_will_eat_to_false': {
         'task': 'users.tasks.set_will_eat_false',
-        # 'schedule': crontab(minute=30, hour=11) # Makes the will_eat attribute of all users to False @ 5 pm IST.
+        # 'schedule': crontab(minute=0, hour=17) # Makes the will_eat attribute of all users to False @ 5 pm IST.
         'schedule': crontab(minute=20, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
     },
 
