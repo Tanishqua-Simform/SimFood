@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from headchef.models import MenuModel
 from users.models import SimfoodUser
+from SimFood.throttle import CustomGetThrottleClass, CustomPutThrottleClass, CustomPaymentPutThrottleClass
 from .serializers import MenuViewSerializer, UserPreferenceSerializer, PaymentSerializer
 from datetime import datetime, timedelta, time
 
@@ -21,6 +22,7 @@ class IsConsumer(BasePermission):
 
 class ViewMenuChangeEatPreferenceDaily(APIView):
     permission_classes = [IsAuthenticated & IsSubscribed]
+    throttle_classes = [CustomGetThrottleClass, CustomPutThrottleClass]
     def get(self, request):
         date = datetime.now().date()
         time = datetime.now().time()
@@ -62,6 +64,7 @@ class ViewMenuChangeEatPreferenceDaily(APIView):
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated & IsConsumer])
+@throttle_classes([CustomGetThrottleClass, CustomPaymentPutThrottleClass])
 def payment_process(request):
     user = SimfoodUser.objects.get(email=request.user)
     

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from headchef.models import TaskModel
+from SimFood.throttle import CustomGetThrottleClass, CustomPutThrottleClass
 # from headchef.serializers import TaskSerializer
 from users.models import SimfoodUser
 from .serializers import TaskCookSerializer
@@ -16,6 +17,7 @@ class IsCook(BasePermission):
 
 class task_list(APIView):
     permission_classes=[IsAuthenticated & IsCook]
+    throttle_classes = [CustomGetThrottleClass]
     def get(self, request):
         queryset = TaskModel.objects.filter(assigned_to=request.user, created_at__icontains=datetime.now().date())
         if len(queryset) > 0:
@@ -30,6 +32,8 @@ class task_list(APIView):
 
 class get_task(APIView):
     permission_classes=[IsAuthenticated & IsCook]
+    throttle_scope = ('user-get', 'user-put')
+    throttle_classes = [CustomGetThrottleClass, CustomPutThrottleClass]
     def get(self, request, pk):
         task = TaskModel.objects.get(id=pk)
         serializer = TaskCookSerializer(task)

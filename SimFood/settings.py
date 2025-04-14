@@ -64,7 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'users.middleware.request_log.RequestLoggingMiddleware',
+    'users.middleware.log_requests.RequestLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'SimFood.urls'
@@ -155,6 +155,20 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    # Throttling Requests for our Application.
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+        # 'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        # 'user': '50/hr' 
+        'anon': '5/hr',
+        'user-get': '10/hr',
+        'user-put': '20/day',
+        'payment-put': '3/day',
+        'user-post': '20/day'
+    }
 }
 
 # JWT Authentication Configuration
