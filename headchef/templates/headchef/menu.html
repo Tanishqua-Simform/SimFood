@@ -1,0 +1,53 @@
+<html>
+{% load menutags %}
+{% load bootstrap5 %} {% bootstrap_css%}
+
+<body>
+  {% if menu %}
+  <div class="text-center mt-5 h3">Menu for {{menu.date}}</div>
+  <table class="table table-dark table-hover table-striped w-25 mx-auto mt-5 text-center">
+    <thead class="thead-light">
+      <tr>
+        <th>Category</th>
+        <th>Dishes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Dal</td>
+        <td>{{menu.dal | format_dish_name }}</td>
+      </tr>
+      <tr>
+        <td>Rice</td>
+        <td>{{menu.rice | format_dish_name }}</td>
+      </tr>
+      <tr>
+        <td>Sabzi</td>
+        <td>{{menu.sabzi | format_dish_name }}</td>
+      </tr>
+      <tr>
+        <td>Roti</td>
+        <td>{{menu.roti | format_dish_name }}</td>
+      </tr>
+      <tr>
+        <td>Extras</td>
+        <td>
+          {%for i in menu.extras%} {{i | format_dish_name }}
+          <br />
+          {% endfor %}
+        </td>
+      </tr>
+      <tr>
+        <td>Jain Dal</td>
+        <td>{{menu.jain_dal | format_dish_name }}</td>
+      </tr>
+      <tr>
+        <td>Jain Sabzi</td>
+        <td>{{menu.jain_sabzi | format_dish_name }}</td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+</body>
+
+</html>

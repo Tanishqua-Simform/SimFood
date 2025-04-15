@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from django.db import connection
+from django.http import HttpResponse
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -8,6 +10,7 @@ from SimFood.throttle import CustomGetThrottleClass, CustomPutThrottleClass, Cus
 from users.models import SimfoodUser
 from .models import TaskModel, MenuModel
 from .serializers import TaskSerializer, MenuSerializer
+from datetime import date, timedelta
 
 class IsHeadChef(BasePermission):
     def has_permission(self, request, view):
@@ -49,3 +52,39 @@ def get_will_eat_count(request):
         'going_to_eat_jain': eat_jain
     }
     return Response(content) 
+
+def send_jinja_email(request):
+    tomorrow = date.today() + timedelta(days=1)
+    user = SimfoodUser.objects.get(email=request.user)
+    menu = MenuModel.objects.filter(date=tomorrow).values().first()
+
+    # We made custom filter for this in DTL but using this logic in Jinja instead
+    for key in menu:
+        val = menu[key]
+        if key in ['dal', 'rice', 'sabzi', 'roti', 'jain_sabzi', 'jain_dal']:
+            menu[key] = ' '.join([i.capitalize() for i in val.split('_')])
+        elif key == 'extras':
+            menu[key] = [extras.capitalize() for extras in val]
+        elif key == 'date':
+            menu[key] = date.strftime(val, '%B %d, %Y')
+    context = {
+        'username': user.first_name,
+        'menu': menu
+    }
+    text_content = render_to_string('menu.txt', context)
+    html_content = render_to_string('menu.html', context)
+    mail = EmailMultiAlternatives(f'SimFood - Delicious Meal for {menu["date"]}', text_content, to=['codeblinders5@gmail.com'])
+    mail.attach_alternative(html_content, 'text/html')
+    # mail.send(fail_silently=True)
+    mail.send()
+    return HttpResponse('Your Mail Has been sent Successfully!')
+
+def render_dtl(request):
+    today = date.today()
+    menu = MenuModel.objects.filter(date=today).values().first()
+    user = SimfoodUser.objects.get(email=request.user)
+    context = {
+        'username': user.first_name,
+        'menu': menu
+    }
+    return render(request, 'headchef/menu.html', context)

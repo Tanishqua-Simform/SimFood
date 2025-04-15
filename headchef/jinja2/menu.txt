@@ -1,0 +1,26 @@
+Good Day {{username | upper }},
+
+I hope you are doing well.
+
+We are excited to share with you the menu for tomorrow's lunch.
+
+{% if menu %}
+  Menu for {{menu.date}}
+  Dal - {{menu.dal}}
+  Rice - {{menu.rice}}
+  Sabzi - {{menu.sabzi}}
+  Roti - {{menu.roti}}
+  Extras
+    {%for i in menu.extras%} {{i}}
+    {% endfor %}
+  Jain Dal - {{menu.jain_dal}}
+  Jain Sabzi - {{menu.jain_sabzi}}
+{% endif %}
+It will be greatly appreciated if you could share your presence with us on our SimFood Application.
+Your satisfaction is our greatest concern. Please help us save food by letting us know about your availability priorly.
+You can share your status anytime between now till tomorrow 10 A.M.
+
+Can't wait to get your response and start preparing delicious and healthy food for you.
+
+Regards,
+SimFood Kitchen.

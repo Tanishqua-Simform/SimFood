@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_celery_results',
     'django_celery_beat',
+    'bootstrap5',
     'users',
     'headchef',
     'cook',
@@ -70,6 +71,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'SimFood.urls'
 
 TEMPLATES = [
+        {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+		    # 'environment': 'SimFood.jinja2.environment'
+	    }
+    },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -82,7 +91,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = 'SimFood.wsgi.application'
@@ -99,6 +108,10 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_POSTGRES_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '',
+        # 'TEST': {
+        #     'ENGINE': 'django.db.backends.sqlite3',
+        #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # },
     }
 }
 
@@ -220,3 +233,11 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=21, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
     }
 }
+
+# Email Configurations
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

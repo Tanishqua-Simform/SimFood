@@ -1,0 +1,84 @@
+<html>
+
+<head>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      width: 400px;
+      height: 30px;
+      padding: 5px;
+      text-align: center;
+    }
+
+    table {
+      margin-left: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <pre>
+  Good Day <b>{{username | upper}}</b>,
+
+  I hope you are doing well.
+
+  <b>We are excited to share with you the menu for tomorrow's lunch.</b></pre>
+  {% if menu %}
+  <table style="border: 1px solid black">
+    <caption>
+      <strong> Menu for {{menu.date}}</strong>
+    </caption>
+
+    <tr>
+      <th style="border: 1px solid black">Category</th>
+      <th>Dishes</th>
+    </tr>
+    <tr>
+      <td>Dal</td>
+      <td>{{menu.dal}}</td>
+    </tr>
+    <tr>
+      <td>Rice</td>
+      <td>{{menu.rice}}</td>
+    </tr>
+    <tr>
+      <td>Sabzi</td>
+      <td>{{menu.sabzi}}</td>
+    </tr>
+    <tr>
+      <td>Roti</td>
+      <td>{{menu.roti}}</td>
+    </tr>
+    <tr>
+      <td>Extras</td>
+      <td>
+        {% for i in menu.extras %} {{i}} <br />
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td>Jain Dal</td>
+      <td>{{menu.jain_dal}}</td>
+    </tr>
+    <tr>
+      <td>Jain Sabzi</td>
+      <td>{{menu.jain_sabzi}}</td>
+    </tr>
+  </table>
+  {% endif %}
+
+  <pre>
+  <i style="color:gray">It will be greatly appreciated if you could share your presence with us on our SimFood Application.
+  Your satisfaction is our greatest concern. Please help us save food by letting us know about your availability priorly.
+  You can share your status anytime between now <strong style="color:red">till tomorrow 10 A.M.</strong> </i>
+
+  Can't wait to get your response and start preparing delicious and healthy food for you.
+
+  Regards,
+  SimFood Kitchen.</pre>
+</body>
+
+</html>
