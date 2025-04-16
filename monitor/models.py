@@ -9,4 +9,4 @@ class StatsModel(models.Model):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.menu_id
+        return str(self.date)

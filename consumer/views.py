@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
@@ -24,12 +25,18 @@ class ViewMenuChangeEatPreferenceDaily(APIView):
     permission_classes = [IsAuthenticated & IsSubscribed]
     throttle_classes = [CustomGetThrottleClass, CustomPutThrottleClass]
     def get(self, request):
-        date = datetime.now().date()
-        time = datetime.now().time()
-        menu_change_time = datetime.strptime('10:30 AM', '%I:%M %p').time() # 4:00 PM IST in GMT time
-        if time >= menu_change_time:
-            date += timedelta(days=1)
-        menu = MenuModel.objects.filter(date__icontains=date)
+        menu = cache.get('menu')
+        if not menu:
+            print('Cache Miss MENU')
+            date = datetime.now().date()
+            time = datetime.now().time()
+            menu_change_time = datetime.strptime('6:00 PM', '%I:%M %p').time() # Menu for next day after 6 PM
+            if time >= menu_change_time:
+                date += timedelta(days=1)
+            menu = MenuModel.objects.filter(date__icontains=date)
+            cache.set('menu', menu, timeout=60*60)
+        else:
+            print('Cache Hit MENU')
         if len(menu) > 0:
             menu_serializer = MenuViewSerializer(menu, many=True)
             user = SimfoodUser.objects.get(email=request.user)
