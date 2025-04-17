@@ -39,7 +39,7 @@ def dashboard(request):
         'saved': monthly[0][2] * 0.5
     }
     data = {
-        'status': 'success',
+        'message': 'Data Retrieval Successful',
         'response': {
             'served-people-last-7-days': day,
             'prev-month-food-analysis-in-kgs': month

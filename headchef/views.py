@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
@@ -47,11 +47,14 @@ class MenuRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 def get_will_eat_count(request):
     eat_jain = SimfoodUser.objects.filter(will_eat=True, prefer_jain_food=True).count()
     eat_regular = SimfoodUser.objects.filter(will_eat=True, prefer_jain_food=False).count()
-    content = {
-        'going_to_eat_regular': eat_regular,
-        'going_to_eat_jain': eat_jain
+    data = {
+        'message': 'Consumers count retrieval successful',
+        'response': {
+            'going_to_eat_regular': eat_regular,
+            'going_to_eat_jain': eat_jain
+        }
     }
-    return Response(content) 
+    return Response(data, status=status.HTTP_200_OK) 
 
 def send_jinja_email(request):
     tomorrow = date.today() + timedelta(days=1)

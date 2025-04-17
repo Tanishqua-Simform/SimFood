@@ -1,4 +1,3 @@
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -7,26 +6,40 @@ from .models import SimfoodUser
 class ProtectedViewTest(APITestCase):
     def setUp(self):
         self.user = SimfoodUser.objects.create_user(
-            email = 'tanishqua.bansal8@simformsolutions.com',
-            first_name = 'Tanishqua',
-            last_name = 'Bansal',
-            # role = 'consumer'
-            # subscription_active = models.BooleanField(default=False)
-            # paid_next_month = models.BooleanField(default=False)
-            # prefer_jain_food = models.BooleanField(default=False)
-            # will_eat = models.BooleanField(default=False)
-            # came_to_eat = models.BooleanField(default=False)
-            # is_active = models.BooleanField(default=True)
-            # is_staff = models.BooleanField(default=False)
+            email = 'test@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
         )
-        self.client.force_login(user=self.user)
-        self.url = reverse('protected')
+    
+    # Login to obtain JWT token
+    def login(self):
+        url = reverse('token_obtain_pair')
+        user_data = {
+            'email': 'test@simformsolutions.com',
+            'password': 'test@123'
+        }
+        response = self.client.post(url, data=user_data)
+        self.token = response.json()['access']
 
-    def test_protected_view(self):
+    # Testing Unauthenticated
+    def test_protected_view_unauthenticated(self):
+        self.url = reverse('protected')
         response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # Testing Authenticated
+    def test_protected_view_authenticated(self):
+        self.url = reverse('protected')
+        self.login()
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        response = self.client.get(self.url, headers=headers)
         json_content = {
-            "status": "success",
-            "message": "You are authenticated!"
+            'message':'You are authenticated!',
+            'response': 'Confidential Information.'
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, json_content)

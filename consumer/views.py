@@ -25,6 +25,7 @@ class ViewMenuChangeEatPreferenceDaily(APIView):
     permission_classes = [IsAuthenticated & IsSubscribed]
     throttle_classes = [CustomGetThrottleClass, CustomPutThrottleClass]
     def get(self, request):
+        # Menu Retrieval
         menu = cache.get('menu')
         if not menu:
             print('Cache Miss MENU')
@@ -39,35 +40,48 @@ class ViewMenuChangeEatPreferenceDaily(APIView):
             print('Cache Hit MENU')
         if len(menu) > 0:
             menu_serializer = MenuViewSerializer(menu, many=True)
-            user = SimfoodUser.objects.get(email=request.user)
-            preference_serializer = UserPreferenceSerializer(user)
-            return Response({ 'menu': menu_serializer.data, 'preference': preference_serializer.data} , status=status.HTTP_200_OK)
+            menu_response = menu_serializer.data
+        else:
+            menu_response = 'Menu for tomorrow is not uploaded yet.'
+        
+        # user Preference Retrieval
+        user = SimfoodUser.objects.get(email=request.user)
+        preference_serializer = UserPreferenceSerializer(user)
         data = {
-            'status': 'success', 
-            'message': 'Menu for tomorrow is not uploaded yet.'
+            'message': 'Menu and Preference details retrieval successful',
+            'response': { 
+                'menu': menu_response, 
+                'preference': preference_serializer.data
+            }
         }
         return Response(data, status=status.HTTP_200_OK)
     
     def put(self, request):
-        # timezone = datetime.tzinfo('IST')
-        # request_time = datetime.now().astimezone(timezone).time()
-        # disable_from = datetime.strptime('10:00 AM', '%H:%M:%S')
-        # disable_till = datetime.strptime('6:00 PM', '%H:%M:%S')
         request_time = datetime.now().time()
         disable_from = time(hour=10, minute=0)
         disable_till = time(hour=18, minute=0)
         if disable_from <= request_time <= disable_till:
-            context = {
-                'status' : 'failed',
-                'error': 'Cannot Change Preference From 10:00 AM to 6:00 PM.'
+            data = {
+                'message' : 'User Preference updation failed',
+                'response': {
+                    'error': 'Cannot Change Preference From 10:00 AM to 6:00 PM.'
+                }
             }
-            return Response(context, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         user = SimfoodUser.objects.get(email=request.user)
         preference_serializer = UserPreferenceSerializer(user, data=request.data)
         if preference_serializer.is_valid():
             preference_serializer.save()
-            return Response(preference_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(preference_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data = {
+                'message' : 'User Preference updation successful',
+                'response': preference_serializer.data
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
+        data = {
+                'message' : 'User Preference updation failed',
+                'response': preference_serializer.errors
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated & IsConsumer])
@@ -78,26 +92,25 @@ def payment_process(request):
     if request.method == 'GET':
         serializer = PaymentSerializer(instance=user)
         if user.paid_next_month and user.subscription_active:
-            context = {
-                'status': 'success',
-                'message': 'Your subscription is active and you have paid for next month as well',
-            }
+            payment_status_message = 'Your subscription is active and you have paid for next month as well'
+
         elif user.subscription_active:
-            context = {
-                'status': 'success',
-                'message': 'Your subscription is active. Pay for next month to continue.',
-            }
+            payment_status_message =  'Your subscription is active. Pay for next month to continue.'
+
         elif user.paid_next_month:
-            context = {
-                'status': 'success',
-                'message': 'You have paid for next month. Pay for current month to get access for Kitchen.',
-            }
+            payment_status_message = 'You have paid for next month. Pay for current month to get access for Kitchen.'
+
         else:
-            context = {
-                'status': 'success',
-                'message': 'You have not subscribed for our delicious meal. Please pay fee for current month or for next month to subscribe.',
+            payment_status_message = 'You have not subscribed for our delicious meal. Please pay fee for current month or for next month to subscribe.'
+
+        data = {
+                'message': 'Payment status retrieval successful',
+                'response': {
+                    'payment_status_message': payment_status_message,
+                    'payment_status': serializer.data
+                }
             }
-        return Response({'Reponse': context, 'User Status': serializer.data}, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
     
     if request.method == 'PUT':
         old_data = {
@@ -107,5 +120,13 @@ def payment_process(request):
         serializer = PaymentSerializer(instance=user, data=request.data, context=old_data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'User Status': serializer.data}, status=status.HTTP_200_OK)
-        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            data = {
+                'message': 'Payment status updation successful',
+                'response': serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        data = {
+            'message': 'Payment status updation failed',
+            'response': serializer.errors
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)

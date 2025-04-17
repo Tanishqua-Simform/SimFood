@@ -22,10 +22,14 @@ class task_list(APIView):
         queryset = TaskModel.objects.filter(assigned_to=request.user, created_at__icontains=datetime.now().date())
         if len(queryset) > 0:
             serializer = TaskCookSerializer(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            data = {
+                'message': 'Task list retrieval successful',
+                'response': serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
         data = {
-            'status': 'success',
-            'message': 'For today, No Tasks are created yet.'
+            'message': 'Task list retrieval successful',
+            'response': 'For today, No Tasks are created yet.'
         }
         return Response(data, status=status.HTTP_200_OK)
 
@@ -35,14 +39,38 @@ class get_task(APIView):
     throttle_scope = ('user-get', 'user-put')
     throttle_classes = [CustomGetThrottleClass, CustomPutThrottleClass]
     def get(self, request, pk):
-        task = TaskModel.objects.get(id=pk)
-        serializer = TaskCookSerializer(task)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        task = TaskModel.objects.filter(id=pk)
+        if len(task) > 0:
+            serializer = TaskCookSerializer(task[0])
+            data = {
+                'message': 'Task details retrieval successful',
+                'response': serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        data = {
+            'message': 'Task details retrieval failed',
+            'response': 'No such Task exists'
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
-        task = TaskModel.objects.get(id=pk)
-        serializer = TaskCookSerializer(task, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        task = TaskModel.objects.filter(id=pk)
+        if len(task) > 0:
+            serializer = TaskCookSerializer(task[0], data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                data = {
+                    'message': 'Task status updation successful',
+                    'response': serializer.data
+                }
+                return Response(data, status=status.HTTP_200_OK)
+            data = {
+                'message': 'Task status updation failed',
+                'response': serializer.errors
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        data = {
+            'message': 'Task status updation failed',
+            'response': 'No such Task exists'
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)

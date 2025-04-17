@@ -14,8 +14,16 @@ class RegisterView(APIView):
         serializer = SimfoodUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(SimfoodUserSerializer(user).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data = {
+                'message': 'User Registration Successful',
+                'response': SimfoodUserSerializer(user).data
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
+        data = {
+            'message': 'User Registration Failed',
+            'response': serializer.errors
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 class TestingAuth(APIView):
     authentication_classes = [JWTAuthentication]
@@ -23,7 +31,7 @@ class TestingAuth(APIView):
 
     def get(self, request):
         data = {
-            'status':'success',
-            'message':'You are authenticated!'
+            'message':'You are authenticated!',
+            'response': 'Confidential Information.'
         }
         return Response(data, status=status.HTTP_200_OK)
