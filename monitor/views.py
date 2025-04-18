@@ -25,19 +25,26 @@ def dashboard(request):
     if not monthly:
         print('Cache Miss MONTHLY')
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM public.stats_analysis_monthly('2025-05-12')")
+            today = date.today()
+            cursor.execute(f"SELECT * FROM public.stats_analysis_monthly('{today}')")
             monthly = cursor.fetchall()
             cache.set('monthly', monthly)
     else:
         print('Cache Hit MONTHLY')
     day = {}
-    for date, consumers in daily:
-        day[str(date)] = consumers
-    month = {
-        'consumed': monthly[0][0] * 0.5,
-        'wasted': monthly[0][1] * 0.5,
-        'saved': monthly[0][2] * 0.5
-    }
+    if daily:
+        for dt, consumers in daily:
+            day[str(dt)] = consumers
+    else:
+        day = 'No data available.'
+    if monthly[0][0]:
+        month = {
+            'consumed': monthly[0][0] * 0.5,
+            'wasted': monthly[0][1] * 0.5,
+            'saved': monthly[0][2] * 0.5
+        }
+    else:
+        month = 'Previous month data not available.'
     data = {
         'message': 'Data Retrieval Successful',
         'response': {

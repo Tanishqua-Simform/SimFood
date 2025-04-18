@@ -32,7 +32,7 @@ class MenuViewTest(APITestCase):
             role = 'headchef'
         )
         self.today_menu = MenuModel.objects.create(
-            date = "2025-04-17",
+            date = "2025-04-18",
             dal = "gujarati_dal",
             rice = "jeera_rice",
             sabzi = "aloo_bhindi",
@@ -49,7 +49,7 @@ class MenuViewTest(APITestCase):
             created_by = self.headchef
         )
         self.tomorrow_menu = MenuModel.objects.create(
-            date = "2025-04-18",
+            date = "2025-04-19",
             dal = "mix_dal",
             rice = "plain_rice",
             sabzi = "butter_paneer",
@@ -146,8 +146,32 @@ class PaymentProcessViewTest(APITestCase):
             subscription_active = True,
             role = 'cook'
         )
-        self.consumer = SimfoodUser.objects.create_user(
-            email = 'consumer@simformsolutions.com', 
+        self.consumer_both_inactive = SimfoodUser.objects.create_user(
+            email = 'consumer_both_inactive@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+            role = 'consumer'
+        )
+        self.consumer_both_active = SimfoodUser.objects.create_user(
+            email = 'consumer_both_active@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+            subscription_active = True,
+            paid_next_month = True,
+            role = 'consumer'
+        )
+        self.consumer_next_active = SimfoodUser.objects.create_user(
+            email = 'consumer_next_active@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+            paid_next_month = True,
+            role = 'consumer'
+        )
+        self.consumer_curr_active = SimfoodUser.objects.create_user(
+            email = 'consumer_curr_active@simformsolutions.com', 
             password = 'test@123',
             first_name = 'Test',
             last_name = 'Case',
@@ -196,11 +220,131 @@ class PaymentProcessViewTest(APITestCase):
 
     # Authenticated Person with Consumer Role
     def test_payment_view_authenticated_consumer(self):
-        consumer = {
-            'email': 'consumer@simformsolutions.com',
+        consumer_curr_active = {
+            'email': 'consumer_curr_active@simformsolutions.com',
             'password': 'test@123'
         }
-        token = self.login(consumer)
+        token = self.login(consumer_curr_active)
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        response = self.client.get(self.url, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    # Authenticated Person with Consumer Role Paying Current and Next
+    def test_payment_view_authenticated_consumer_pay_both(self):
+        consumer_both_inactive = {
+            'email': 'consumer_both_inactive@simformsolutions.com',
+            'password': 'test@123'
+        }
+        token = self.login(consumer_both_inactive)
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        data = {
+            "paid_next_month": True,
+            "subscription_active": True
+        }   
+        response = self.client.put(self.url, headers=headers, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Authenticated Person with Consumer Role Reverse Payment
+    def test_payment_view_authenticated_consumer_reverse_payment(self):
+        consumer_both_active = {
+            'email': 'consumer_both_active@simformsolutions.com',
+            'password': 'test@123'
+        }
+        token = self.login(consumer_both_active)
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        data = {
+            "paid_next_month": False,
+            "subscription_active": False
+        }   
+        response = self.client.put(self.url, headers=headers, data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class CameToEatScannerViewTest(APITestCase):
+    def setUp(self):
+        self.url = reverse('scanner')
+        self.active_consumer = SimfoodUser.objects.create_user(
+            email = 'active_consumer@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+            subscription_active = True,
+            role = 'headchef'
+        )
+        self.inactive_consumer = SimfoodUser.objects.create_user(
+            email = 'inactive_consumer@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+        )
+        self.headchef = SimfoodUser.objects.create_user(
+            email = 'headchef@simformsolutions.com', 
+            password = 'test@123',
+            first_name = 'Test',
+            last_name = 'Case',
+            subscription_active = True,
+            role = 'headchef'
+        )
+
+    # To receive JWT Token
+    def login(self, user_data):
+        url = reverse('token_obtain_pair')
+        response = self.client.post(url, data=user_data)
+        return response.json()['access']
+
+    # Unauthenticated Person
+    def test_scanner_unauthenticated(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # Authenticated Person with Inactive Subscription
+    def test_scanner_authenticated_inactive_consumer(self):
+        inactive_consumer = {
+            'email': 'inactive_consumer@simformsolutions.com',
+            'password': 'test@123'
+        }
+        token = self.login(inactive_consumer)
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        response = self.client.get(self.url, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
+    # Authenticated Person with Active Subscription
+    def test_scanner_authenticated_active_consumer(self):
+        active_consumer = {
+            'email': 'active_consumer@simformsolutions.com',
+            'password': 'test@123'
+        }
+        token = self.login(active_consumer)
+        headers = {
+            'Authorization': f'Bearer {token}',
+            'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'
+        }
+        # Mark Attendace once
+        response = self.client.get(self.url, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Mark Attendance Twice gives error
+        response = self.client.get(self.url, headers=headers)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    # Authenticated Person with Headchef Role
+    def test_scanner_authenticated_headchef(self):
+        headchef = {
+            'email': 'headchef@simformsolutions.com',
+            'password': 'test@123'
+        }
+        token = self.login(headchef)
         headers = {
             'Authorization': f'Bearer {token}',
             'Cookie': 'csrftoken=k9Uhq7wciYP5iWaF8qa1zPBb99f6ideP'

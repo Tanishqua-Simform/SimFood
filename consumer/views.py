@@ -35,7 +35,7 @@ class ViewMenuChangeEatPreferenceDaily(APIView):
             if time >= menu_change_time:
                 date += timedelta(days=1)
             menu = MenuModel.objects.filter(date__icontains=date)
-            cache.set('menu', menu, timeout=60*60)
+            cache.set('menu', menu, timeout=60*60*3)
         else:
             print('Cache Hit MENU')
         if len(menu) > 0:
@@ -128,5 +128,24 @@ def payment_process(request):
         data = {
             'message': 'Payment status updation failed',
             'response': serializer.errors
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsSubscribed])
+def came_to_eat_attendance_scanner(request):
+    user = SimfoodUser.objects.get(email=request.user)
+    if not user.came_to_eat:
+        user.came_to_eat = True
+        user.save()
+        data = {
+            'message': 'Lunch taken status updation successful',
+            'response': 'User came_to_eat status set to True'
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    else:
+        data = {
+            'message': 'Lunch taken status updation failed',
+            'response': 'Cannot mark attendance twice.'
         }
         return Response(data, status=status.HTTP_400_BAD_REQUEST)

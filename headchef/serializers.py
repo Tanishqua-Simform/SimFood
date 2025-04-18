@@ -4,6 +4,8 @@ from datetime import datetime
 from users.models import SimfoodUser
 
 class TaskSerializer(serializers.ModelSerializer):
+    assigned_to = serializers.SerializerMethodField()
+    assigned_by = serializers.SerializerMethodField()
 
     class Meta:
         model = TaskModel
@@ -20,9 +22,15 @@ class TaskSerializer(serializers.ModelSerializer):
         validated_data["assigned_by"] = user
         return TaskModel.objects.create(**validated_data)
 
+    def get_assigned_to(self, obj):
+        return obj.assigned_to.first_name
+    
+    def get_assigned_by(self, obj):
+        return obj.assigned_by.first_name
 
 class MenuSerializer(serializers.ModelSerializer):
     extras = serializers.MultipleChoiceField(choices=MenuModel.EXTRA_CHOICES)
+    created_by = serializers.SerializerMethodField()
 
     class Meta:
         model = MenuModel
@@ -38,6 +46,9 @@ class MenuSerializer(serializers.ModelSerializer):
         user = SimfoodUser.objects.get(email=email)
         validated_data["created_by"] = user
         return MenuModel.objects.create(**validated_data)
+    
+    def get_created_by(self, obj):
+        return obj.created_by.first_name
 
     def validate_date(self, date):
         if not datetime.now().date().__lt__(date):

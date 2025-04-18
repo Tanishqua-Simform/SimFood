@@ -3,3 +3,4 @@ testing_data.json
 venv/
 __pycache__/
 LOGS/
+.coverage
