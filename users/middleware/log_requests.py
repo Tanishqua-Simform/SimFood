@@ -1,7 +1,12 @@
+'''
+Users/Middleware/Log_requests.py - It contains logging information for 
+all requests made to the server each day
+'''
 import logging
 from datetime import date, datetime
 
 class RequestLoggingMiddleware():
+    ''' Middleware class to log requests day-wise'''
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -15,29 +20,38 @@ class RequestLoggingMiddleware():
         logging.basicConfig(filename=f"./LOGS/{today}.log", encoding="utf-8", level=logging.DEBUG)
 
         # Parameters to be logged - Before Response
-        ACCESS_TIME = datetime.now().time()
-        METHOD = request.method
-        PATH = request.META['PATH_INFO']
-        if METHOD in ['PUT', 'POST']:
-            REQUEST_DATA = request.body
+        access_time = datetime.now().time()
+        method = request.method
+        path = request.META['PATH_INFO']
+        if method in ['PUT', 'POST']:
+            request_data = request.body
         else:
-            REQUEST_DATA = 'No Data Recieved!'
+            request_data = 'No Data Recieved!'
 
-        # Get Response 
+        # Get Response
         response = self.get_response(request)
 
         # Parameters to be logged - After Response
-        USER = request.user
+        user = request.user
+        if user.is_authenticated:
+            role = user.role
+        else:
+            role = 'Guest'
+        status_code = response.status_code
         try:
-            ROLE = USER.role
+            response_data = response.data
         except Exception:
-            ROLE = 'Guest'
-        STATUS_CODE = response.status_code
-        try:
-            RESPONSE_DATA = response.data
-        except Exception:
-            RESPONSE_DATA = 'JSON Data not sent'
+            response_data = 'JSON Data not sent'
 
         # Logging the data in the file.
-        logger.log(level=logging.INFO, msg=f'\n\tACCESS_TIME = {ACCESS_TIME}; \n\tUSER = "{USER}"; \n\tROLE = "{ROLE}"; \n\tMETHOD = "{METHOD}"; \n\tPATH = "{PATH}"; \n\tREQUEST_DATA = {REQUEST_DATA}; \n\tSTATUS_CODE = "{STATUS_CODE}"; \n\tRESPONSE_DATA = {RESPONSE_DATA}\n')
+        logger.log(
+            level=logging.INFO,
+            msg=f'''\n\tACCESS_TIME = {access_time};
+            USER = "{user}";
+            ROLE = "{role}";
+            METHOD = "{method}";
+            PATH = "{path}";
+            REQUEST_DATA = {request_data};
+            STATUS_CODE = "{status_code}";
+            RESPONSE_DATA = {response_data}\n''')
         return response

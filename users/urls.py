@@ -1,3 +1,9 @@
+'''
+Users/Urls.py - It contains url endpoints for -
+1. Register to SimFood and get credentials.
+2. Get token with those credentials (refresh and access)
+3. Protected View to check JWT authentication.
+'''
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 from .views import RegisterView, TestingAuth

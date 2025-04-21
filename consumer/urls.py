@@ -1,3 +1,9 @@
+'''
+Consumer/Urls.py - It contains url endpoints for -
+1. Retrieving Menu (Get and Put)
+2. Payment (Get and Put)
+3. Scanner (Get)
+'''
 from django.urls import path
 from .views import ViewMenuChangeEatPreferenceDaily, payment_process, came_to_eat_attendance_scanner
 

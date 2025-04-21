@@ -1,15 +1,19 @@
-from django.shortcuts import render
+'''
+Monitor/Views.py - It contains the views for -
+1. Dashboard - To show the analysis on daily basis and Monthly basis, to the authenticated users.
+'''
+from datetime import date
+from django.db import connection
+from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from django.db import connection
-from datetime import date
-from django.core.cache import cache
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard(request):
+    ''' Allow authenticated users to view the dashboard for the monthly and daily analysis.'''
     monthly = cache.get('monthly')
     daily = cache.get('daily')
     # For Past 7 days data

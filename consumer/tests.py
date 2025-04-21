@@ -32,7 +32,7 @@ class MenuViewTest(APITestCase):
             role = 'headchef'
         )
         self.today_menu = MenuModel.objects.create(
-            date = "2025-04-18",
+            date = "2025-04-21",
             dal = "gujarati_dal",
             rice = "jeera_rice",
             sabzi = "aloo_bhindi",
@@ -49,7 +49,7 @@ class MenuViewTest(APITestCase):
             created_by = self.headchef
         )
         self.tomorrow_menu = MenuModel.objects.create(
-            date = "2025-04-19",
+            date = "2025-04-22",
             dal = "mix_dal",
             rice = "plain_rice",
             sabzi = "butter_paneer",

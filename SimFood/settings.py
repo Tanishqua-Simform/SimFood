@@ -171,7 +171,7 @@ REST_FRAMEWORK = {
         # 'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        # 'user': '50/hr' 
+        # 'user': '50/hr'
         'anon': '100/day',
         'user-get': '10/hr',
         'user-put': '20/day',
@@ -185,7 +185,7 @@ SIMPLE_JWT = {
     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
 
-    # While DEVELOPMENT is going on - 
+    # While DEVELOPMENT is going on -
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
 }
@@ -208,55 +208,47 @@ task_serializer = 'json'
 result_backend = 'redis://127.0.0.1:6379'
 timezone = 'Asia/Kolkata'
 
-# Celery Beat 
+# Celery Beat
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 CELERY_BEAT_SCHEDULE = {
     'daily_email_for_set_will_eat_reminder': {
         'task': 'consumer.tasks.email_for_set_will_eat_reminder',
-        # 'schedule': crontab(minute=0, hour=8) # Sends Will_Eat Reminder Mail Everyday @8 AM to those who have not set this field yet.
-        'schedule': crontab(minute=47, hour=16) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=8) # Sends Will_Eat Reminder Mail Everyday @8 AM to those who have not set this field yet.
     },
 
     'daily_fill_stats_table': {
         'task': 'monitor.tasks.fill_stats_table',
-        # 'schedule': crontab(minute=30, hour=16) # Fill the Stats table everyday @ 4:30 PM IST.
-        'schedule': crontab(minute=38, hour=12)  # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=30, hour=16) # Fill the Stats table everyday @ 4:30 PM IST.
     },
 
     'daily_set_will_eat_to_false': {
         'task': 'users.tasks.set_will_eat_false',
-        # 'schedule': crontab(minute=0, hour=17) # Makes the will_eat attribute of all users to False @ 5 PM IST.
-        'schedule': crontab(minute=20, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=17) # Makes the will_eat attribute of all users to False @ 5 PM IST.
     },
 
     'daily_email_for_menu': {
         'task': 'headchef.tasks.email_for_menu',
-        # 'schedule': crontab(minute=0, hour=18) # Sends Menu for next day from Mail everyday @6 PM to those will active subscription.
-        'schedule': crontab(minute=48, hour=16) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=18) # Sends Menu for next day from Mail everyday @6 PM to those will active subscription.
     },
 
     'daily_delete_bar_graph_analysis_cache': {
         'task': 'monitor.tasks.delete_daily_analysis_cache',
-        # 'schedule': crontab(minute=0, hour=0) # Deletes the cache for Daily Stats Data everyday @midnight
-        'schedule': crontab(minute=3, hour=20) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=0) # Deletes the cache for Daily Stats Data everyday @midnight
     },
 
     'monthly_set_subscription_active_to_false': {
         'task': 'users.tasks.set_subscription_active_false',
-        # 'schedule': crontab(minute=0, hour=0, day_of_month=1) # Makes the subscription_active attribute of all users to False @12 AM IST on 1st of every month.
-        'schedule': crontab(minute=21, hour=12) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=0, day_of_month=1) # Makes the subscription_active attribute of all users to False @12 AM IST on 1st of every month.
     },
 
     'monthly_email_for_payment': {
         'task': 'consumer.tasks.email_for_payment',
-        # 'schedule': crontab(minute=0, hour=9, day_of_month='23,28') # Sends Payment Reminder Mail on 23rd and 28th of every month @9 AM IST, to those eho have not paid yet.
-        'schedule': crontab(minute=46, hour=16) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=9, day_of_month='23,28') # Sends Payment Reminder Mail on 23rd and 28th of every month @9 AM IST, to those eho have not paid yet.
     },
 
     'monthly_delete_pie_chart_analysis_cache': {
         'task': 'monitor.tasks.delete_monthly_analysis_cache',
-        # 'schedule': crontab(minute=0, hour=0, day_of_month=1)  # Deletes the cache for Monthly Stats Data on 1st of every month @midnight
-        'schedule': crontab(minute=4, hour=20) # FOR TESTING COMMENT IT LATER YAADDD SEEEEE!
+        'schedule': crontab(minute=0, hour=0, day_of_month=1)  # Deletes the cache for Monthly Stats Data on 1st of every month @midnight
     }
 }
 

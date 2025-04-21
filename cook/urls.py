@@ -1,7 +1,12 @@
+'''
+Cook/Urls.py - It contains url endpoints for -
+1. Listing Tasks (Get)
+2. Retrieving Tasks (Get and Put)
+'''
 from django.urls import path
-from .views import task_list, get_task
+from .views import TaskListView, TaskRetrieveView
 
 urlpatterns = [
-    path('tasks/', task_list.as_view(), name='tasks'),
-    path('task/<int:pk>', get_task.as_view(), name='task_retrieve'),
+    path('tasks/', TaskListView.as_view(), name='tasks'),
+    path('task/<int:pk>', TaskRetrieveView.as_view(), name='task_retrieve'),
 ]

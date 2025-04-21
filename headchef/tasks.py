@@ -1,12 +1,17 @@
+'''
+Headchef/Tasks.py - It contains Asynchronous tasks to be executed outsside the main thread.
+1. Email for menu to subscribed users.
+'''
+from datetime import date, timedelta
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from .models import MenuModel
 from users.models import SimfoodUser
-from datetime import date, timedelta
+from .models import MenuModel
 
 @shared_task
 def email_for_menu():
+    ''' Email for menu to all subscribed users daily @6 Pm'''
     active_users = SimfoodUser.objects.filter(subscription_active=True)
     tomorrow = date.today() + timedelta(days=1)
     menu = MenuModel.objects.filter(date=tomorrow).values().first()
@@ -21,7 +26,7 @@ def email_for_menu():
                 menu[key] = [extras.capitalize() for extras in val]
             elif key == 'date':
                 menu[key] = date.strftime(val, '%B %d, %Y')
-        
+
         for user in active_users:
             context = {
                 'username': user.first_name,
